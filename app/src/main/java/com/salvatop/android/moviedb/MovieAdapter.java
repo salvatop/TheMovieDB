@@ -23,13 +23,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.salvatop.android.moviedb.R;
-
 /**
- * {@link ForecastAdapter} exposes a list of weather forecasts to a
+ * {@link MovieAdapter} exposes a list of weather forecasts to a
  * {@link android.support.v7.widget.RecyclerView}
  */
-public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapterViewHolder> {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdapterViewHolder> {
 
     private String[] mWeatherData;
 
@@ -47,17 +45,17 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     }
 
     /**
-     * Creates a ForecastAdapter.
+     * Creates a MovieAdapter.
      *
      * @param clickHandler The on-click handler for this adapter. This single handler is called
      *                     when an item is clicked.
      */
-    public ForecastAdapter(ForecastAdapterOnClickHandler clickHandler) {
+    public MovieAdapter(ForecastAdapterOnClickHandler clickHandler) {
         mClickHandler = clickHandler;
     }
 
     /**
-     * Cache of the children views for a forecast list item.
+     * Cache of the children views for a movies list item.
      */
     public class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         public final TextView mWeatherTextView;
@@ -95,7 +93,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     @Override
     public ForecastAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.forecast_list_item;
+        int layoutIdForListItem = R.layout.movie_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
@@ -123,7 +121,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
      * This method simply returns the number of items to display. It is used behind the scenes
      * to help layout our Views and for animations.
      *
-     * @return The number of items available in our forecast
+     * @return The number of items available in our movies
      */
     @Override
     public int getItemCount() {
@@ -132,9 +130,9 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     }
 
     /**
-     * This method is used to set the weather forecast on a ForecastAdapter if we've already
+     * This method is used to set the weather movies on a MovieAdapter if we've already
      * created one. This is handy when we get new data from the web but don't want to create a
-     * new ForecastAdapter to display it.
+     * new MovieAdapter to display it.
      *
      * @param weatherData The new weather data to be displayed.
      */

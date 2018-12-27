@@ -18,9 +18,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
-import com.salvatop.android.moviedb.data.SunshinePreferences;
 import com.salvatop.android.moviedb.utilities.NetworkUtils;
-import com.salvatop.android.moviedb.utilities.OpenWeatherJsonUtils;
+import com.salvatop.android.moviedb.utilities.JsonUtils;
 
 
 import java.net.URL;
@@ -28,12 +27,12 @@ import java.net.URL;
 import static com.salvatop.android.moviedb.utilities.NetworkUtils.getResponseFromHttpUrl;
 
 
-public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.ForecastAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView mRecyclerView;
-    private ForecastAdapter mForecastAdapter;
+    private MovieAdapter mMovieAdapter;
 
     private TextView mErrorMessageDisplay;
 
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_forecast);
+        setContentView(R.layout.activity_movies);
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
@@ -60,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
          */
 
         GridLayoutManager layoutManager
-                = new GridLayoutManager(this, GridLayoutManager.chooseSize(6,2,2));
+                = new GridLayoutManager(this, GridLayoutManager.chooseSize(2,2,2));
 
         mRecyclerView.setLayoutManager(layoutManager);
 
@@ -71,13 +70,13 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         mRecyclerView.setHasFixedSize(true);
 
         /*
-         * The ForecastAdapter is responsible for linking our weather data with the Views that
+         * The MovieAdapter is responsible for linking our weather data with the Views that
          * will end up displaying our weather data.
          */
-        mForecastAdapter = new ForecastAdapter(this);
+        mMovieAdapter = new MovieAdapter(this);
 
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
-        mRecyclerView.setAdapter(mForecastAdapter);
+        mRecyclerView.setAdapter(mMovieAdapter);
 
         /*
          * The ProgressBar that will indicate to the user that we are loading data. It will be
@@ -98,9 +97,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
      */
     private void loadWeatherData() {
         showWeatherDataView();
-
-        String location = SunshinePreferences.getPreferredWeatherLocation(this);
-        new FetchWeatherTask().execute(location);
+        new FetchWeatherTask().execute("");
     }
 
     /**
@@ -168,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
             try {
                 String jsonWeatherResponse = getResponseFromHttpUrl(weatherRequestUrl);
 
-                String[] simpleJsonWeatherData = OpenWeatherJsonUtils
+                String[] simpleJsonWeatherData = JsonUtils
                         .getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
 
                 return simpleJsonWeatherData;
@@ -184,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (weatherData != null) {
                 showWeatherDataView();
-                mForecastAdapter.setWeatherData(weatherData);
+                mMovieAdapter.setWeatherData(weatherData);
             } else {
                 showErrorMessage();
             }
@@ -221,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
         MenuInflater inflater = getMenuInflater();
         /* Use the inflater's inflate method to inflate our menu layout to this menu */
-        inflater.inflate(R.menu.forecast, menu);
+        inflater.inflate(R.menu.movies, menu);
         /* Return true so that the menu is displayed in the Toolbar */
         return true;
     }
@@ -231,13 +228,17 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.F
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            mForecastAdapter.setWeatherData(null);
+            mMovieAdapter.setWeatherData(null);
             loadWeatherData();
             return true;
         }
 
-        // COMPLETED (2) Launch the map when the map menu item is clicked
-        if (id == R.id.action_map) {
+        if (id == R.id.actionSortByPopularity) {
+            openLocationInMap();
+            return true;
+        }
+
+        if (id == R.id.actionSortByRating) {
             openLocationInMap();
             return true;
         }
