@@ -22,7 +22,7 @@
     <!--Used in Action Bar, and in AndroidManifest to tell the device the name of this app.-->
     <!--It's good to keep this short, so your launcher icon isn't displayed with "The greatest Wea"-->
     <!--or something similar.-->
-    <string name="app_name">Sunshine</string>
+    <string name="app_name">The Movie DB</string>
 
     <!--By convention, "action" denotes that this String will be used as the label for an Action,-->
     <!--typically from the action bar.  The ActionBar is limited real estate, so shorter is better.-->
@@ -33,7 +33,8 @@
     <string name="action_refresh">Refresh</string>
 
     <string name="error_message">
-        An error has occurred. Please try again by clicking REFRESH
+        An network error has occurred.
+        Please verify your internet connection and try again by clicking REFRESH
     </string>
 
 
