@@ -33,9 +33,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.adap
 
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
-
     private TextView mErrorMessageDisplay;
-
     private ProgressBar mLoadingIndicator;
 
     @Override
@@ -96,14 +94,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.adap
      * This method is overridden by our MainActivity class in order to handle RecyclerView item
      * clicks.
      *
-     * @param weatherForDay The weather for the day that was clicked
+     * @param movie The weather for the day that was clicked
      */
     @Override
-    public void onClick(String weatherForDay) {
+    public void onClick(String movie) {
         Context context = this;
         Class destinationClass = DetailActivity.class;
         Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, weatherForDay);
+        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, movie);
         startActivity(intentToStartDetailActivity);
     }
 
@@ -138,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.adap
 
             try {
                 String jsonWeatherResponse = getResponseFromHttpUrl(weatherRequestUrl);
-
+                ////////////////////////////////////////////////////////////////////////////////GET DATA
                 String[] simpleJsonWeatherData = JsonUtils
                         .getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
 
