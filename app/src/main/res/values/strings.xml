@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- - - - - - - - - - - - - -->
-    <!-- Used throughout Sunshine-->
-    <!-- - - - - - - - - - - - - -->
-
+    <!-- - - - - - - - - - - - - - - -->
+    <!-- Used throughout The Movie DB-->
+    <!-- - - - - - - - - - - - - - - -->
     <string name="app_name">The Movie DB</string>
-    <string name="sort_by_popularity">Sort by most popular</string>
-    <string name="sort_by_rating">Sort by high rated</string>
-    <string name="action_share">Share</string>
+    <string name="sort_by_popularity">Sort by popularity</string>
+    <string name="sort_by_rating">Sort by rating</string>
+    <string name="sorted_by_rating_name">Top Rated</string>
+    <string name="sorted_by_popularity_name">Most Popular</string>
 
     <!--Used in overflow menu to refresh data-->
     <string name="action_refresh">Refresh</string>

@@ -27,7 +27,7 @@ import java.net.URL;
 import static com.salvatop.android.moviedb.utilities.NetworkUtils.getResponseFromHttpUrl;
 
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.ForecastAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.adapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -48,15 +48,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Fore
          * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_forecast);
-
-        /* This TextView is used to display errors and will be hidden if there are no errors */
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-
-        /*
-         * LinearLayoutManager can support HORIZONTAL or VERTICAL orientations. The reverse layout
-         * parameter is useful mostly for HORIZONTAL layouts that should reverse for right to left
-         * languages.
-         */
 
         GridLayoutManager layoutManager
                 = new GridLayoutManager(this, GridLayoutManager.chooseSize(2,2,2));
@@ -115,31 +107,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Fore
         startActivity(intentToStartDetailActivity);
     }
 
-    /**
-     * This method will make the View for the weather data visible and
-     * hide the error message.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
     private void showWeatherDataView() {
-        /* First, make sure the error is invisible */
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        /* Then, make sure the weather data is visible */
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * This method will make the error message visible and hide the weather
-     * View.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
     private void showErrorMessage() {
-        /* First, hide the currently visible data */
         mRecyclerView.setVisibility(View.INVISIBLE);
-        /* Then, show the error */
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
@@ -181,45 +155,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Fore
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (weatherData != null) {
                 showWeatherDataView();
-                mMovieAdapter.setWeatherData(weatherData);
+                mMovieAdapter.setMovie(weatherData);
             } else {
                 showErrorMessage();
             }
         }
     }
 
-    /**
-     * This method uses the URI scheme for showing a location found on a
-     * map. This super-handy intent is detailed in the "Common Intents"
-     * page of Android's developer site:
-     *
-     * @see <a"http://developer.android.com/guide/components/intents-common.html#Maps">
-     *
-     * Hint: Hold Command on Mac or Control on Windows and click that link
-     * to automagically open the Common Intents page
-     */
-    private void openLocationInMap() {
-        String addressString = "1600 Ampitheatre Parkway, CA";
-        Uri geoLocation = Uri.parse("geo:0,0?q=" + addressString);
+    private void sortByRating() {
+        getSupportActionBar().setTitle(R.string.sorted_by_rating_name);
+    }
 
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Couldn't call " + geoLocation.toString()
-                    + ", no receiving apps installed!");
-        }
+    private void sortByRPopularity() {
+        getSupportActionBar().setTitle(R.string.sorted_by_popularity_name);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
         MenuInflater inflater = getMenuInflater();
-        /* Use the inflater's inflate method to inflate our menu layout to this menu */
         inflater.inflate(R.menu.movies, menu);
-        /* Return true so that the menu is displayed in the Toolbar */
         return true;
     }
 
@@ -228,18 +182,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Fore
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            mMovieAdapter.setWeatherData(null);
+            mMovieAdapter.setMovie(null);
             loadWeatherData();
             return true;
         }
 
         if (id == R.id.actionSortByPopularity) {
-            openLocationInMap();
+            sortByRPopularity();
             return true;
         }
 
         if (id == R.id.actionSortByRating) {
-            openLocationInMap();
+            sortByRating();
             return true;
         }
 

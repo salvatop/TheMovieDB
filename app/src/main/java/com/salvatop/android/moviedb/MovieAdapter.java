@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2016 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.salvatop.android.moviedb;
 
 import android.content.Context;
@@ -27,21 +12,18 @@ import android.widget.TextView;
  * {@link MovieAdapter} exposes a list of weather forecasts to a
  * {@link android.support.v7.widget.RecyclerView}
  */
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdapterViewHolder> {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private String[] mWeatherData;
+    private String[] movies;
 
     /*
      * An on-click handler that we've defined to make it easy for an Activity to interface with
      * our RecyclerView
      */
-    private final ForecastAdapterOnClickHandler mClickHandler;
+    private final adapterOnClickHandler mClickHandler;
 
-    /**
-     * The interface that receives onClick messages.
-     */
-    public interface ForecastAdapterOnClickHandler {
-        void onClick(String weatherForDay);
+    public interface adapterOnClickHandler {
+        void onClick(String movie);
     }
 
     /**
@@ -50,17 +32,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
      * @param clickHandler The on-click handler for this adapter. This single handler is called
      *                     when an item is clicked.
      */
-    public MovieAdapter(ForecastAdapterOnClickHandler clickHandler) {
+    public MovieAdapter(adapterOnClickHandler clickHandler) {
         mClickHandler = clickHandler;
     }
 
     /**
      * Cache of the children views for a movies list item.
      */
-    public class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         public final TextView mWeatherTextView;
 
-        public ForecastAdapterViewHolder(View view) {
+        public MovieAdapterViewHolder(View view) {
             super(view);
             mWeatherTextView = (TextView) view.findViewById(R.id.tv_weather_data);
             view.setOnClickListener(this);
@@ -74,8 +56,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            String weatherForDay = mWeatherData[adapterPosition];
-            mClickHandler.onClick(weatherForDay);
+            String movie = movies[adapterPosition];
+            mClickHandler.onClick(movie);
         }
     }
 
@@ -88,17 +70,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
      *                  can use this viewType integer to provide a different layout. See
      *                  {@link android.support.v7.widget.RecyclerView.Adapter#getItemViewType(int)}
      *                  for more details.
-     * @return A new ForecastAdapterViewHolder that holds the View for each list item
+     * @return A new MovieAdapterViewHolder that holds the View for each list item
      */
     @Override
-    public ForecastAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.movie_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        return new ForecastAdapterViewHolder(view);
+        View itemView = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+        int height = viewGroup.getMeasuredHeight() / 2;
+        itemView.setMinimumHeight(height);
+        return new MovieAdapterViewHolder(itemView);
     }
 
     /**
@@ -107,37 +91,24 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
      * details for this particular position, using the "position" argument that is conveniently
      * passed into us.
      *
-     * @param forecastAdapterViewHolder The ViewHolder which should be updated to represent the
+     * @param MovieAdapterViewHolder The ViewHolder which should be updated to represent the
      *                                  contents of the item at the given position in the data set.
      * @param position                  The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
-        String weatherForThisDay = mWeatherData[position];
-        forecastAdapterViewHolder.mWeatherTextView.setText(weatherForThisDay);
+    public void onBindViewHolder(MovieAdapterViewHolder MovieAdapterViewHolder, int position) {
+        String weatherForThisDay = movies[position];
+        MovieAdapterViewHolder.mWeatherTextView.setText(weatherForThisDay);
     }
 
-    /**
-     * This method simply returns the number of items to display. It is used behind the scenes
-     * to help layout our Views and for animations.
-     *
-     * @return The number of items available in our movies
-     */
     @Override
     public int getItemCount() {
-        if (null == mWeatherData) return 0;
-        return mWeatherData.length;
+        if (movies == null) return 0;
+        return movies.length;
     }
 
-    /**
-     * This method is used to set the weather movies on a MovieAdapter if we've already
-     * created one. This is handy when we get new data from the web but don't want to create a
-     * new MovieAdapter to display it.
-     *
-     * @param weatherData The new weather data to be displayed.
-     */
-    public void setWeatherData(String[] weatherData) {
-        mWeatherData = weatherData;
+    public void setMovie(String[] movies) {
+        this.movies = movies;
         notifyDataSetChanged();
     }
 }
