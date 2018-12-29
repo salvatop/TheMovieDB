@@ -8,10 +8,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-/**
- * {@link MovieAdapter} exposes a list of weather forecasts to a
- * {@link android.support.v7.widget.RecyclerView}
- */
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private String[] movies;

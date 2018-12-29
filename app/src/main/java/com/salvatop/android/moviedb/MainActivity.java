@@ -1,15 +1,12 @@
-
 package com.salvatop.android.moviedb;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,78 +21,50 @@ import com.salvatop.android.moviedb.utilities.JsonUtils;
 
 import java.net.URL;
 
-import static com.salvatop.android.moviedb.utilities.NetworkUtils.getResponseFromHttpUrl;
+import static com.salvatop.android.moviedb.utilities.NetworkUtils.getResponse;
 
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.adapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private RecyclerView mRecyclerView;
-    private MovieAdapter mMovieAdapter;
-    private TextView mErrorMessageDisplay;
-    private ProgressBar mLoadingIndicator;
+    private RecyclerView movieGrid;
+    private MovieAdapter movieAdapter;
+    private TextView error;
+    private ProgressBar loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movies);
+        setContentView(R.layout.activity_main);
 
-        /*
-         * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
-         * do things like set the adapter of the RecyclerView and toggle the visibility.
-         */
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_forecast);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
+        movieGrid = (RecyclerView) findViewById(R.id.recyclerview_forecast);
+        error = (TextView) findViewById(R.id.tv_error_message_display);
 
-        GridLayoutManager layoutManager
-                = new GridLayoutManager(this, GridLayoutManager.chooseSize(2,2,2));
+        GridLayoutManager layoutManager = new GridLayoutManager(
+                this, GridLayoutManager.chooseSize(2,2,2));
 
-        mRecyclerView.setLayoutManager(layoutManager);
+        movieGrid.setLayoutManager(layoutManager);
+        movieGrid.setHasFixedSize(true);
 
-        /*
-         * Use this setting to improve performance if you know that changes in content do not
-         * change the child layout size in the RecyclerView
-         */
-        mRecyclerView.setHasFixedSize(true);
+        movieAdapter = new MovieAdapter(this);
 
-        /*
-         * The MovieAdapter is responsible for linking our weather data with the Views that
-         * will end up displaying our weather data.
-         */
-        mMovieAdapter = new MovieAdapter(this);
+        movieGrid.setAdapter(movieAdapter);
 
-        /* Setting the adapter attaches it to the RecyclerView in our layout. */
-        mRecyclerView.setAdapter(mMovieAdapter);
+        loading = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        /*
-         * The ProgressBar that will indicate to the user that we are loading data. It will be
-         * hidden when no data is loading.
-         *
-         * Please note: This so called "ProgressBar" isn't a bar by default. It is more of a
-         * circle. We didn't make the rules (or the names of Views), we just follow them.
-         */
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
-
-        /* Once all of our views are setup, we can load the weather data. */
-        loadWeatherData();
+        loadMovies("discover");
     }
 
     /**
-     * This method will get the user's preferred location for weather, and then tell some
-     * background method to get the weather data in the background.
+     * This method will get the user's preferred sorting and
+     * get the data in the background.
      */
-    private void loadWeatherData() {
-        showWeatherDataView();
-        new FetchWeatherTask().execute("");
+    private void loadMovies(String sortBy) {
+        showMoviesView();
+        new FetchTaskToExecute().execute(sortBy);
     }
 
-    /**
-     * This method is overridden by our MainActivity class in order to handle RecyclerView item
-     * clicks.
-     *
-     * @param movie The weather for the day that was clicked
-     */
     @Override
     public void onClick(String movie) {
         Context context = this;
@@ -105,42 +74,40 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.adap
         startActivity(intentToStartDetailActivity);
     }
 
-    private void showWeatherDataView() {
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.VISIBLE);
+    private void showMoviesView() {
+        error.setVisibility(View.INVISIBLE);
+        movieGrid.setVisibility(View.VISIBLE);
     }
 
     private void showErrorMessage() {
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        movieGrid.setVisibility(View.INVISIBLE);
+        error.setVisibility(View.VISIBLE);
     }
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+    public class FetchTaskToExecute extends AsyncTask<String, Void, String[]> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
+            loading.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected String[] doInBackground(String... params) {
-
-            /* If there's no zip code, there's nothing to look up. */
             if (params.length == 0) {
                 return null;
             }
 
-            String location = params[0];
-            URL weatherRequestUrl = NetworkUtils.buildUrl(location);
+            /* discover movies by default */
+
+            String sortBy = params[0];
+            URL requestUrl = NetworkUtils.buildUrl(sortBy);
 
             try {
-                String jsonWeatherResponse = getResponseFromHttpUrl(weatherRequestUrl);
-                ////////////////////////////////////////////////////////////////////////////////GET DATA
-                String[] simpleJsonWeatherData = JsonUtils
-                        .getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
+                String jsonResponse = getResponse(requestUrl);
+                String[] movies = JsonUtils.getMovieJson(MainActivity.this, jsonResponse);
 
-                return simpleJsonWeatherData;
+                return movies;
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -149,11 +116,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.adap
         }
 
         @Override
-        protected void onPostExecute(String[] weatherData) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (weatherData != null) {
-                showWeatherDataView();
-                mMovieAdapter.setMovie(weatherData);
+        protected void onPostExecute(String[] movie) {
+            loading.setVisibility(View.INVISIBLE);
+            if (movie != null) {
+                showMoviesView();
+                movieAdapter.setMovie(movie);
             } else {
                 showErrorMessage();
             }
@@ -162,10 +129,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.adap
 
     private void sortByRating() {
         getSupportActionBar().setTitle(R.string.sorted_by_rating_name);
+        loadMovies("rating");
     }
 
     private void sortByRPopularity() {
         getSupportActionBar().setTitle(R.string.sorted_by_popularity_name);
+        loadMovies("popularity");
     }
 
     @Override
@@ -180,8 +149,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.adap
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            mMovieAdapter.setMovie(null);
-            loadWeatherData();
+            movieAdapter.setMovie(null);
+            loadMovies("discover");
             return true;
         }
 
