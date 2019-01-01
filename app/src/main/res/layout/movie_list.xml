@@ -13,6 +13,12 @@
         android:layout_height="wrap_content"
         android:padding="5dp"/>
 
+    <ImageView
+        android:id="@+id/displayMovie"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"/>
+
     <!--This View serves as a visual divider between list items-->
     <View
         android:layout_width="match_parent"

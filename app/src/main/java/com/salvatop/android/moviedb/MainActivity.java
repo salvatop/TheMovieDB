@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.adap
             if (movie != null) {
                 showMoviesView();
                 movieAdapter.setMovie(movie);
+
             } else {
                 showErrorMessage();
             }

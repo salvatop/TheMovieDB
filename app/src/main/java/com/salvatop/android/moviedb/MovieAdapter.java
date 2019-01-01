@@ -1,22 +1,26 @@
 package com.salvatop.android.moviedb;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import com.squareup.picasso.Picasso;
+
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
-
+    Uri movieImage = Uri.parse("https://image.tmdb.org/t/p/w1280/ydUpl3QkVUCHCq1VWvo2rW4Sf7y.jpg");
     private String[] movies;
 
     /*
      * An on-click handler that we've defined to make it easy for an Activity to interface with
      * our RecyclerView
      */
-    private final adapterOnClickHandler mClickHandler;
+    private final adapterOnClickHandler clickHandler;
 
     public interface adapterOnClickHandler {
         void onClick(String movie);
@@ -29,7 +33,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      *                     when an item is clicked.
      */
     public MovieAdapter(adapterOnClickHandler clickHandler) {
-        mClickHandler = clickHandler;
+        this.clickHandler = clickHandler;
     }
 
     /**
@@ -37,23 +41,26 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      */
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         public final TextView mWeatherTextView;
+        public final ImageView displayMovie;
 
         public MovieAdapterViewHolder(View view) {
             super(view);
-            mWeatherTextView = (TextView) view.findViewById(R.id.tv_weather_data);
             view.setOnClickListener(this);
+
+            mWeatherTextView = (TextView) view.findViewById(R.id.tv_weather_data);
+
+            Context context = view.getContext();
+            displayMovie = (ImageView) view.findViewById(R.id.displayMovie);
+            Picasso.with(context)
+                    .load(movieImage)
+                    .into(displayMovie);
         }
 
-        /**
-         * This gets called by the child views during a click.
-         *
-         * @param v The View that was clicked
-         */
         @Override
-        public void onClick(View v) {
+        public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             String movie = movies[adapterPosition];
-            mClickHandler.onClick(movie);
+            clickHandler.onClick(movie);
         }
     }
 
@@ -71,7 +78,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.movie_list_item;
+        int layoutIdForListItem = R.layout.movie_list;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
@@ -94,7 +101,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder MovieAdapterViewHolder, int position) {
         String weatherForThisDay = movies[position];
+
         MovieAdapterViewHolder.mWeatherTextView.setText(weatherForThisDay);
+
+        MovieAdapterViewHolder.displayMovie.setImageURI(movieImage);
+
     }
 
     @Override
