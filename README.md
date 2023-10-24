@@ -1,5 +1,5 @@
 # TheMovieDB
-MovieInfo is a simple Android app that uses The MovieDB API to gather and display information about films. With this app, you can browse through a vast collection of movies, view details about each film, and stay updated on the latest releases. Whether you're a film enthusiast or just looking for something to watch, MovieInfo has you covered.
+MovieInfo is a simple Android app that uses The MovieDB API to gather and display information about films. With this app, you can browse through a vast collection of movies, view details about each film, and stay updated on the latest releases. Whether you're a film enthusiast or just looking for something to watch, MovieInfo has you covered. is a simple Android app that uses The MovieDB API to gather and display information about films. With this app, you can browse through a vast collection of movies, view details about each film, and stay updated on the latest releases. Whether you're a film enthusiast or just looking for something to watch, MovieInfo has you covered.
 
 ## Features
 **Search for Movies**: Easily search for movies by title, genre, or keyword.
